@@ -1,5 +1,10 @@
 package edu.usm.cos420.example1.exceptions;
 
+/**
+ * 
+ * An Exception class for the DAO classes
+ *
+ */
 public class DaoException extends RuntimeException {
 
     // Constants ----------------------------------------------------------------------------------

@@ -7,33 +7,67 @@
 package edu.usm.cos420.example1.domain;
 
 import java.io.Serializable;
-import edu.usm.cos420.example1.domain.util.PersistentObject;
+
 
 /**
  *
- *  For the purposes of this example, CItem holds two 
+ *  For the purposes of this example, CItem holds three 
  *  piece of data. The class implements the interface 
  *  Serializable so that we can store and retrieve the 
  *  information in this class 
  * 
- *  
  */
-public class CItem extends PersistentObject implements Serializable {
+public class CItem implements Serializable {
     
 	private static final long serialVersionUID = 7526472295622776147L;
+    private Long id;
+    private static Long COUNTER = 0L;
 	private Integer myInteger;
     private String myString;
+
+   /**
+    * get the ID of the CItem 
+    * @return ID 
+    */
+    public Long getId() {
+		return id;
+	}
+
+    /**
+     * Set the ID of the CItem
+     * @param id new id 
+     */
+	public void setId(Long id) {
+		this.id = id;
+	}
     
-	/** Creates new CItem */
-    public CItem() {
+	/** 
+	 * Default Constructor : 
+	 * Creates new CItem with an autogenenerated sequence ID 
+	 */
+	public CItem() {
         myInteger = new Integer(0);
         myString = new String("");
+    	id = generateId();
     }
 
-    /** Creates new CItem */
-    public CItem(int n,java.lang.String str) {
+	/** 
+	 * Two field Constructor : 
+	 * Creates new CItem with an autogenenerated sequence ID 
+	 */
+    public CItem(int n, String str) {
         myInteger = new Integer(n);
         myString = str;
+    	id = generateId();
+    }
+
+    /** 
+     * Three field constructor 
+     */
+    public CItem(Long id, int n, String str) {
+        myInteger = new Integer(n);
+        myString = str;
+    	this.id = id;
     }
 
 	/**
@@ -68,6 +102,12 @@ public class CItem extends PersistentObject implements Serializable {
     @Override
     public String toString() {
         return String.format("CItem [id=%d,myString=%s,myInteger=%s]", getId(), myString, myInteger);
+    }
+
+    // for autogeneration of ids
+    private Long generateId()
+    {
+    	return COUNTER++;
     }
 
 }
