@@ -125,6 +125,54 @@ public class TestCItemDao {
         
 	}
 
+	@Test
+    public void testUpdateAdd() {
+        Long id; 
+        CItem retrievedItem;
+        
+    	
+        CItem oneItem = new CItem(new Long((int) (Math.random()*100000)), 1, "a string"); 
+        CItem twoItem = new CItem(new Long((int) (Math.random()*100000)), 2, "a string"); 
+        CItem threeItem = new CItem(new Long((int) (Math.random()*100000)), 3, "a string"); 
+        
+        // get PK of first address
+        id = oneItem.getId();        
+        dao.add(oneItem);
+        id = twoItem.getId();        
+        dao.add(twoItem);
+
+        // CHeck one of the three items to make sure it was stored correctly
+        retrievedItem = dao.find(twoItem.getId());
+        
+        assertNotNull("Dao returns a null item.", retrievedItem);
+        assertEquals("Stored Id and original Id are not equal ", retrievedItem.getId() , twoItem.getId());
+        assertEquals("Stored int and original int are not equal ", retrievedItem.getMyInteger() , twoItem.getMyInteger());
+        assertEquals("Stored int and original int are not equal ", retrievedItem.getMyString() , twoItem.getMyString());
+
+        twoItem.setMyString("A New String");
+        twoItem.setMyInteger(55);
+        dao.update(twoItem);
+        retrievedItem = dao.find(twoItem.getId());
+
+        // Check that the modified elements was properly stored
+        assertNotNull("Dao returns a null item.", retrievedItem);
+        assertEquals("Stored Id and original Id are not equal ", retrievedItem.getId() , twoItem.getId());
+        assertEquals("Stored int and original int are not equal ", retrievedItem.getMyInteger() , twoItem.getMyInteger());
+        assertEquals("Stored int and original int are not equal ", retrievedItem.getMyString() , twoItem.getMyString());
+
+        id = threeItem.getId();        
+        dao.add(threeItem);
+        
+        retrievedItem = dao.find(threeItem.getId());
+        
+        // check one of the other elements to make sure they are ok 
+        assertNotNull("Dao returns a null item.", retrievedItem);
+        assertEquals("Stored Id and original Id are not equal ", retrievedItem.getId() , threeItem.getId());
+        assertEquals("Stored int and original int are not equal ", retrievedItem.getMyInteger() , threeItem.getMyInteger());
+        assertEquals("Stored int and original int are not equal ", retrievedItem.getMyString() , threeItem.getMyString());
+
+	}
+
 
 		
 	/** 
