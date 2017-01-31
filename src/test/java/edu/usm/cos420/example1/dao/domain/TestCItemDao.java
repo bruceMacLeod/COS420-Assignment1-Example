@@ -27,7 +27,7 @@ public class TestCItemDao {
  */
 	@Before
 	public void setupData() {
-		   dao = new CItemDao("_citemTest1.ser");
+		   dao = new CItemDao("_citemTest.ser");
 		   
 	}
 	
