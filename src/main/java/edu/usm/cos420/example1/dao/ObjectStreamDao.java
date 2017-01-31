@@ -32,8 +32,6 @@ public class ObjectStreamDao<IDType, T extends Serializable> implements GenericD
     private ObjectOutputStream oos;
 // filename associated with the ObjectStream
     private String fileName;
-// counter that is useful for determining the number of objects to read from the collection    
-    private int objectCount; 
     
     /**
      * Default Constructor creates an ObjectStream associated with the filename "noname.ser" 
@@ -56,24 +54,18 @@ public class ObjectStreamDao<IDType, T extends Serializable> implements GenericD
 			// if file doesn't exists, then create it
 			if (!file.exists()) {
 				FileOutputStream fos = new FileOutputStream(fileName);
-	    		oos = new ObjectOutputStream(fos);
+				oos = new ObjectOutputStream(fos);
+			} else {
+				FileOutputStream fos = new FileOutputStream(file, true);
+				oos = new AppendingObjectOutputStream(fos);
 			}
-			else 
-			{
-				FileOutputStream fos = new FileOutputStream(file,true);
-	    		oos = new AppendingObjectOutputStream(fos);
-	            objectCount = determineNumberOfObjectsInStream();				
-			}
+		} catch (FileNotFoundException e) {
+			System.err.println("Could not find " + fileName + e);
+		} catch (IOException e) {
+			System.err.println("Some Error writing to stream " + e);
+		} catch (Exception e) {
+			System.err.println(e);
 		}
-    	catch (FileNotFoundException e) {
-    		System.err.println("Could not find "+ fileName + e);   	
-    	}
-    	catch (IOException e) {
-    		System.err.println("Some Error writing to stream " + e);   	
-    	}
-    	catch (Exception e){
-    		System.err.println(e);
-    	}	
 	}
 	
 	/**
@@ -82,22 +74,17 @@ public class ObjectStreamDao<IDType, T extends Serializable> implements GenericD
 	 *  @param entity object of Type T to be added to the collection  
 	 */
 	public void add(IDType id, T entity) {
-	   	try {
-	   		oos.writeObject(id);
+		try {
+			oos.writeObject(id);
 			oos.writeObject(entity);
-			objectCount++;
-    	}
-    	catch (FileNotFoundException e) {
-    		System.err.println("Could not find " + fileName + e);   	
-    	}
-    	catch (IOException e) {
-    		System.err.println("Some Error writing to stream " + e);   	
-    	}
-    	catch (Exception e){
-    		System.err.println(e);
-    	}	
+		} catch (FileNotFoundException e) {
+			System.err.println("Could not find " + fileName + e);
+		} catch (IOException e) {
+			System.err.println("Some Error writing to stream " + e);
+		} catch (Exception e) {
+			System.err.println(e);
+		}
 	}
-
 
 	/**
 	 *  Update an entity in the ObjectStream  
@@ -121,7 +108,6 @@ public class ObjectStreamDao<IDType, T extends Serializable> implements GenericD
 	    entityMap = readStreamIntoMap();
 		entityMap.remove(id);
 		writeMapIntoStream(entityMap);
-		objectCount--;
 	}
 
 	/**
@@ -194,10 +180,10 @@ public class ObjectStreamDao<IDType, T extends Serializable> implements GenericD
     	try {
     		FileInputStream fis = new FileInputStream(fileName);
     		ObjectInputStream ois = new ObjectInputStream(fis);
-    		for (int i = 0;i<objectCount;i++)
+    		while (fis.available() > 0)
     		{
     			IDType id = (IDType) ois.readObject();
-                T entity = (T) ois.readObject();
+            T entity = (T) ois.readObject();
     			entityMap.put(id, entity);	
     		}
     		ois.close();
