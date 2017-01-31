@@ -58,6 +58,7 @@ public class ObjectStreamDao<IDType, T extends Serializable> implements GenericD
 			} else {
 				FileOutputStream fos = new FileOutputStream(file, true);
 				oos = new AppendingObjectOutputStream(fos);
+			    entityMap = readStreamIntoMap();
 			}
 		} catch (FileNotFoundException e) {
 			System.err.println("Could not find " + fileName + e);
@@ -73,26 +74,19 @@ public class ObjectStreamDao<IDType, T extends Serializable> implements GenericD
 	 *  @param id  id of the entity to be added with Type IDType
 	 *  @param entity object of Type T to be added to the collection  
 	 */
-	public void add(IDType id, T entity) {
-		try {
-			oos.writeObject(id);
-			oos.writeObject(entity);
-		} catch (FileNotFoundException e) {
-			System.err.println("Could not find " + fileName + e);
-		} catch (IOException e) {
-			System.err.println("Some Error writing to stream " + e);
-		} catch (Exception e) {
-			System.err.println(e);
-		}
-	}
+	public void add(IDType id, T entity) 
+	{
+	      entityMap.put(id,entity);
+	      writeMapIntoStream(entityMap);
+    }
 
 	/**
 	 *  Update an entity in the ObjectStream  
 	 *  @param id  id of the entity to located in the collection
 	 *  @param entity new object of Type T to replace existing item  
 	 */
-	public void update(IDType id, T entity) {
-	    entityMap = readStreamIntoMap();
+	public void update(IDType id, T entity) 
+	{
 		if (entityMap.get(id) == null) 
 				throw new DaoException("attempting to update non-existent entity ");
 		entityMap.put(id,entity);
@@ -104,8 +98,8 @@ public class ObjectStreamDao<IDType, T extends Serializable> implements GenericD
 	 *  @param id  id of the entity to be removed with Type IDType
 	 */
 
-	public void remove(IDType id) {
-	    entityMap = readStreamIntoMap();
+	public void remove(IDType id) 
+	{
 		entityMap.remove(id);
 		writeMapIntoStream(entityMap);
 	}
@@ -131,7 +125,7 @@ public class ObjectStreamDao<IDType, T extends Serializable> implements GenericD
 	
 	public List<T> list() {
 	    entityMap = readStreamIntoMap();
-    	return new ArrayList<T> (entityMap.values());    		                     
+    	    return new ArrayList<T> (entityMap.values());    		                     
 	}
 
 	/**
@@ -142,8 +136,9 @@ public class ObjectStreamDao<IDType, T extends Serializable> implements GenericD
 	    	{
 	    		int tmpCount = 0;
 	            File file = new File(fileName);
-    			if (!file.exists()) {
-    	    		return 0;
+    			if (!file.exists()) 
+    			{
+    	    		    return 0;
     			}
 
 	        	try {
@@ -228,7 +223,7 @@ public class ObjectStreamDao<IDType, T extends Serializable> implements GenericD
         		oos.writeObject(entry.getKey());
         		oos.writeObject(entry.getValue());
     		}   
-            oos.close();
+        oos.close();
     	}   		
     	catch (FileNotFoundException e) {
     		System.err.println("Could not find " + fileName + "  "+ e);   	
